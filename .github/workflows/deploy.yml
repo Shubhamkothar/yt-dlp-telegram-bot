@@ -3,20 +3,21 @@ name: Deploy to Fly.io
 on:
   push:
     branches:
-      - main  # Runs the deployment when you push changes to the main branch
+      - main  # Runs deployment when you push to the main branch
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Uses a Linux server to deploy
+    runs-on: ubuntu-latest  # Uses a Linux machine for deployment
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  # Clones the GitHub repo into the runner machine
+        uses: actions/checkout@v2
 
-      - name: Set up Fly.io
-        uses: superfly/flyctl-actions/setup-flyctl@master  # Installs Fly.io CLI
+      - name: Install Fly.io CLI
+        run: curl -L https://fly.io/install.sh | sh
 
-      - name: Deploy App
-        run: |
-          flyctl auth token > fly_auth_token.txt  # Logs into Fly.io using API Token
-          flyctl deploy --remote-only  # Deploys the app to Fly.io
+      - name: Authenticate with Fly.io
+        run: flyctl auth token ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only

@@ -1,0 +1,22 @@
+name: Deploy to Fly.io
+
+on:
+  push:
+    branches:
+      - main  # Runs the deployment when you push changes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Uses a Linux server to deploy
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Clones the GitHub repo into the runner machine
+
+      - name: Set up Fly.io
+        uses: superfly/flyctl-actions/setup-flyctl@master  # Installs Fly.io CLI
+
+      - name: Deploy App
+        run: |
+          flyctl auth token > fly_auth_token.txt  # Logs into Fly.io using API Token
+          flyctl deploy --remote-only  # Deploys the app to Fly.io
